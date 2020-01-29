@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB.EntitiesManager", "MongoDB.EntitisManager\MongoDB.EntitiesManager.csproj", "{C9DA27E1-28D0-437E-B7B8-2C34598CF507}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackEnd", "BackEnd\BackEnd.csproj", "{5CD5D074-F557-4420-AAC0-22EE53AB71CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C9DA27E1-28D0-437E-B7B8-2C34598CF507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9DA27E1-28D0-437E-B7B8-2C34598CF507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9DA27E1-28D0-437E-B7B8-2C34598CF507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9DA27E1-28D0-437E-B7B8-2C34598CF507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CD5D074-F557-4420-AAC0-22EE53AB71CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CD5D074-F557-4420-AAC0-22EE53AB71CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CD5D074-F557-4420-AAC0-22EE53AB71CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CD5D074-F557-4420-AAC0-22EE53AB71CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E01E4DDA-EFAD-4435-A607-D3C52A77F9B0}
+	EndGlobalSection
+EndGlobal

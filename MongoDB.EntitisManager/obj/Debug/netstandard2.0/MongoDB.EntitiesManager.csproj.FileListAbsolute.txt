@@ -1,0 +1,7 @@
+C:\Users\Usuario\source\repos\TempName\MongoDB.EntitisManager\bin\Debug\netstandard2.0\MongoDB.EntitiesManager.deps.json
+C:\Users\Usuario\source\repos\TempName\MongoDB.EntitisManager\bin\Debug\netstandard2.0\MongoDB.EntitiesManager.dll
+C:\Users\Usuario\source\repos\TempName\MongoDB.EntitisManager\obj\Debug\netstandard2.0\MongoDB.EntitiesManager.AssemblyInfoInputs.cache
+C:\Users\Usuario\source\repos\TempName\MongoDB.EntitisManager\obj\Debug\netstandard2.0\MongoDB.EntitiesManager.AssemblyInfo.cs
+C:\Users\Usuario\source\repos\TempName\MongoDB.EntitisManager\bin\Debug\netstandard2.0\MongoDB.EntitiesManager.pdb
+C:\Users\Usuario\source\repos\TempName\MongoDB.EntitisManager\obj\Debug\netstandard2.0\MongoDB.EntitiesManager.dll
+C:\Users\Usuario\source\repos\TempName\MongoDB.EntitisManager\obj\Debug\netstandard2.0\MongoDB.EntitiesManager.pdb
