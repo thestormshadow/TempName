@@ -81,6 +81,19 @@ namespace MongoDB.EntitiesManager
         }
 
         /// <summary>
+        /// Registers MongoDB.Entities as a service with the IOC services collection.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="StringConnection">A 'MongoClientSettings' object with customized connection parameters such as authentication credentials.</param>
+        /// <param name="Database">MongoDB database name.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddMongoDBEntities(this IServiceCollection services, string StringConnection, string Database)
+        {
+            services.AddSingleton(new DB(StringConnection, Database));
+            return services;
+        }
+
+        /// <summary>
         /// Gets the IMongoCollection for a given IEntity type.
         /// <para>TIP: Try never to use this unless really neccessary.</para>
         /// </summary>

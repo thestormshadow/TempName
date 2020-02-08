@@ -16,9 +16,8 @@ namespace MongoDB.EntitiesManager.Entities
         public string ID { get; set; }
 
         public DateTime ModifiedOn { get; set; }
-        public bool Status
-        {
-            get; set;
-        }
+        public bool Status  { get; set; }
+
+        
     }
 }

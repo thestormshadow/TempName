@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BackEnd.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using MongoDB.EntitiesManager;
 
 namespace BackEnd
 {
@@ -27,11 +22,16 @@ namespace BackEnd
         {
             services.AddControllers();
 
-            //Si hay problema siclico en filldetails
-            //services.AddMvc().AddJsonOptions(ConfigureJson);
-        }      
+            Extensions.AddMongoDBEntities(
+                services
+                , "mongodb://mexalabsadmin:K27GEkI6oalF7OqN@dcenter-shard-00-00-trvmd.mongodb.net:27017,dcenter-shard-00-01-trvmd.mongodb.net:27017,dcenter-shard-00-02-trvmd.mongodb.net:27017/test?ssl=true&replicaSet=DCenter-shard-0&authSource=admin&retryWrites=true&w=majority"
+                , "DBCentral"
+            );
 
-               
+            IoC.addRegistration(services);
+        }
+
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

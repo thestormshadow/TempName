@@ -1,33 +1,48 @@
-﻿using BackEnd.Interfaces;
-using BackEnd.Models;
+﻿using BackEnd.Models;
+using BackEnd.Services.Interfaces;
 using MongoDB.Driver;
 using MongoDB.EntitiesManager;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace BackEnd.Services
 {
     public class CuentaService : ICuentaService
     {
+        public bool existeUsuario(string Correo)
+        {
+            var cuentas = (from a in DB.Queryable<Cuenta>()
+                           where a.Correo == Correo
+                           select a).ToList();
 
-        public Cuenta getCuenta()
-        {         
-
-            var cuenta = (from a in DB.Queryable<Cuenta>()
-                          where a.StatusAccount == 1 && a.Usuario == "123" && a.Status == true
-                          select a).FirstOrDefault();
-
-            return new Cuenta();
+            return (cuentas.Count > 0) ? true : false;
         }
 
-        public List<Cuenta> getCuentas()
+        public Cuenta Buscar(string Usuario, string Contraseña)
         {
 
             var cuenta = (from a in DB.Queryable<Cuenta>()
-                          where a.Status == true
-                          select a).ToList();
+                          where a.Correo == Usuario && a.Contraseña == Contraseña && a.Status == true
+                          select a).FirstOrDefault();
 
             return cuenta;
+        }
+
+        public Cuenta Buscar(string ID)
+        {
+            return (from a in DB.Queryable<Cuenta>() where a.Status == true select a).FirstOrDefault();
+        }
+
+        public Cuenta Registrar(Cuenta Cuenta)
+        {
+
+            if (!existeUsuario(Cuenta.Correo))
+            {
+                Cuenta.UltimaConexion = DateTime.Now;
+                DB.Save(Cuenta);
+                return Cuenta;
+            }
+            return null;
         }
 
     }
