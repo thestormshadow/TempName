@@ -48,6 +48,8 @@ namespace BackEnd.Controllers
             Cuenta _cuenta = obj.Cuenta;
             Usuario _usuario = obj.Usuario;
 
+            //_cuentaService.Buscar("5e3e5f079f9a9489c09c3e9d");
+
             if (!_cuentaService.existeUsuario(_cuenta.Correo))
             {
                 _cuenta = _cuentaService.Registrar(_cuenta);
