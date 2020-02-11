@@ -63,8 +63,7 @@ namespace BackEnd.Controllers
             else
             {
                 return BadRequest(new { Error = "Ya existe el correo" });
-            }
-                        
+            }            
             return BadRequest(new { Error = "Error al registrar la cuenta" });
         }
 

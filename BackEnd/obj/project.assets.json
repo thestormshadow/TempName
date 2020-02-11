@@ -7952,11 +7952,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Usuario\\source\\repos\\TempName\\BackEnd\\BackEnd.csproj",
+      "projectUniqueName": "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\BackEnd\\BackEnd.csproj",
       "projectName": "BackEnd",
-      "projectPath": "C:\\Users\\Usuario\\source\\repos\\TempName\\BackEnd\\BackEnd.csproj",
+      "projectPath": "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\BackEnd\\BackEnd.csproj",
       "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Usuario\\source\\repos\\TempName\\BackEnd\\obj\\",
+      "outputPath": "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\BackEnd\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",
@@ -7977,8 +7977,8 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "C:\\Users\\Usuario\\source\\repos\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj": {
-              "projectPath": "C:\\Users\\Usuario\\source\\repos\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj"
+            "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj": {
+              "projectPath": "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj"
             }
           }
         }
