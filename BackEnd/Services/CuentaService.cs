@@ -20,40 +20,14 @@ namespace BackEnd.Services
 
         public Cuenta Buscar(string Usuario, string Contraseña)
         {
-            var cuenta = (from a in DB.Queryable<Cuenta>()
-                          where a.Correo == Usuario && a.Contraseña == Contraseña && a.Status == true
-                          join o in DB.Queryable<Usuario>() on a.ID equals o.ID_Cuenta into UsuarioObj                          
-                          select new Cuenta()
-                          {
-                              ID = a.ID,
-                              Correo = a.Correo,
-                              Contraseña = a.Contraseña,
-                              InfoUsuario = UsuarioObj.First(),
-                              StatusAccount = a.StatusAccount,
-                              Status = a.Status,
-                              ModifiedOn = a.ModifiedOn,
-                              UltimaConexion = a.UltimaConexion
-                          }).FirstOrDefault();
-
+            var cuenta = (from a in DB.Queryable<Cuenta>() where a.Correo == Usuario && a.Contraseña == Contraseña && a.Status == true select a).FirstOrDefault();
+            cuenta.InfoUsuario = (from a in DB.Queryable<Usuario>() where a.ID_Cuenta == cuenta.ID && a.Status == true select a).FirstOrDefault();            
             return cuenta;
         }
 
         public Cuenta Buscar(string ID)
         {
-            return (from a in DB.Queryable<Cuenta>()
-                    join o in DB.Queryable<Usuario>() on a.ID equals o.ID_Cuenta into UsuarioObj
-                    where a.ID == ID && a.Status == true
-                    select new Cuenta()
-                    {
-                        ID = a.ID,
-                        Correo = a.Correo,
-                        Contraseña = a.Contraseña,
-                        InfoUsuario = UsuarioObj.First(),
-                        StatusAccount = a.StatusAccount,
-                        Status = a.Status,
-                        ModifiedOn = a.ModifiedOn,
-                        UltimaConexion = a.UltimaConexion
-                    }).FirstOrDefault();
+            return (from a in DB.Queryable<Cuenta>() where a.Status == true select a).FirstOrDefault();
         }
 
         public Cuenta Registrar(Cuenta Cuenta)
