@@ -1,10 +1,14 @@
 using BackEnd.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.EntitiesManager;
+using System;
+using System.Text;
 
 namespace BackEnd
 {
@@ -21,6 +25,23 @@ namespace BackEnd
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = true,
+                     ValidateAudience = true,
+                     ValidateLifetime = true,
+                     ValidateIssuerSigningKey = true,
+                     ValidIssuer = "yourdomain.com",
+                     ValidAudience = "yourdomain.com",
+                     IssuerSigningKey = new SymmetricSecurityKey(
+                     Encoding.UTF8.GetBytes(Configuration["SecretKey"])),
+                     ClockSkew = TimeSpan.Zero
+                 }
+            );
+
+            services.AddCors();
 
             Extensions.AddMongoDBEntities(
                 services
@@ -39,6 +60,15 @@ namespace BackEnd
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed((host) => true)
+                .AllowCredentials()
+            );
+
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
 

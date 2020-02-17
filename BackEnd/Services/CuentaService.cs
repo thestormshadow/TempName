@@ -20,8 +20,11 @@ namespace BackEnd.Services
 
         public Cuenta Buscar(string Usuario, string Contraseña)
         {
-            var cuenta = (from a in DB.Queryable<Cuenta>() where a.Correo == Usuario && a.Contraseña == Contraseña && a.Status == true select a).FirstOrDefault();
-            cuenta.InfoUsuario = (from a in DB.Queryable<Usuario>() where a.ID_Cuenta == cuenta.ID && a.Status == true select a).FirstOrDefault();            
+
+            var cuenta = (from a in DB.Queryable<Cuenta>()
+                          where a.Correo == Usuario && a.Contraseña == Contraseña && a.Status == true
+                          select a).FirstOrDefault();
+
             return cuenta;
         }
 

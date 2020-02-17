@@ -5259,11 +5259,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj",
+      "projectUniqueName": "C:\\Users\\Usuario\\source\\repos\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj",
       "projectName": "MongoDB.EntitiesManager",
-      "projectPath": "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj",
+      "projectPath": "C:\\Users\\Usuario\\source\\repos\\TempName\\MongoDB.EntitisManager\\MongoDB.EntitiesManager.csproj",
       "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Usuario\\Documents\\GitHub\\TempName\\MongoDB.EntitisManager\\obj\\",
+      "outputPath": "C:\\Users\\Usuario\\source\\repos\\TempName\\MongoDB.EntitisManager\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",

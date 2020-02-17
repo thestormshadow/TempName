@@ -6,6 +6,8 @@ using BackEnd.Interfaces;
 using BackEnd.Models;
 using BackEnd.Services;
 using BackEnd.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,6 +15,7 @@ namespace BackEnd.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class WeatherForecastController : BaseController
     {
 
@@ -29,7 +32,7 @@ namespace BackEnd.Controllers
         [HttpGet]
         public Cuenta Get()
         {
-            Cuenta cuent = _cuentaService.Buscar("javiervargasruiz94@gmail.com", "123");
+            Cuenta cuent = _cuentaService.Buscar("123", "123");
 
             return cuent;
         }

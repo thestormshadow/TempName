@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace BackEnd.Models
 {
-    public class Login
+    public class OnlyToken
     {
-        public string Correo { get; set; }
-        public string Password { get; set; }
+        public string Token { get; set; }
     }
 }

@@ -21,16 +21,15 @@ namespace BackEnd.Services
             return usuario;
         }
 
-        ////public Usuario Buscar_PorIdCuenta(string IDCuenta)
-        ////{
-        ////    Usuario response = null;
-        ////    Cuenta cuenta = _cuentaService.Buscar(IDCuenta);
+        public Usuario Buscar_PorIdCuenta(string IDCuenta)
+        {
+            Usuario response = null;
 
-        ////    if (cuenta != null)
-        ////        response = (from a in DB.Queryable<Usuario>() where a.ID_Cuenta == cuenta.ID select a).FirstOrDefault();
+            if (IDCuenta != null || IDCuenta != String.Empty)
+                response = (from a in DB.Queryable<Usuario>() where a.ID_Cuenta == IDCuenta select a).FirstOrDefault();
 
-        ////    return response;
-        ////}
+            return response;
+        }
 
         public List<Usuario> Listar() => (from a in DB.Queryable<Usuario>() select a).ToList();
 

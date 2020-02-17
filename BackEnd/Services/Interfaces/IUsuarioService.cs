@@ -11,7 +11,7 @@ namespace BackEnd.Services.Interfaces
         Usuario Registrar(Usuario usuario);
         Usuario Buscar(string ID);
         List<Usuario> Listar();
-        //Usuario Buscar_PorIdCuenta(string IDCuenta);
+        Usuario Buscar_PorIdCuenta(string IDCuenta);
         List<Usuario> Listar_PorNombre(string Nombre);
         List<Usuario> Listar_PorNombreCompleto(string NombreCompleto);
 
