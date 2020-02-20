@@ -8,9 +8,9 @@ namespace BackEnd.Services.Interfaces
 {
     public interface ICuentaService
     { 
-        bool existeUsuario(string Usuario);
-        Cuenta Buscar(string Usuario, string Contraseña);
-        Cuenta Buscar(string ID);
-        public Cuenta Registrar(Cuenta Cuenta);
+        Task<bool> existeUsuario(string Usuario);
+        Task<Cuenta> Buscar(string Usuario, string Contraseña);
+        Task<Cuenta> Buscar(string ID);
+        Task<Cuenta> Registrar(Cuenta Cuenta);
     }
 }

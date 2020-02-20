@@ -8,12 +8,12 @@ namespace BackEnd.Services.Interfaces
 {
     public interface IUsuarioService
     {
-        Usuario Registrar(Usuario usuario);
-        Usuario Buscar(string ID);
-        List<Usuario> Listar();
-        Usuario Buscar_PorIdCuenta(string IDCuenta);
-        List<Usuario> Listar_PorNombre(string Nombre);
-        List<Usuario> Listar_PorNombreCompleto(string NombreCompleto);
+        Task<Usuario> Registrar(Usuario usuario);
+        Task<Usuario> Buscar(string ID);
+        Task<List<Usuario>> Listar();
+        Task<Usuario> Buscar_PorIdCuenta(string IDCuenta);
+        Task<List<Usuario>> Listar_PorNombre(string Nombre);
+        Task<List<Usuario>> Listar_PorNombreCompleto(string NombreCompleto);
 
     }
 }

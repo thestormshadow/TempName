@@ -32,9 +32,9 @@ namespace BackEnd.Controllers
         [HttpGet]
         public Cuenta Get()
         {
-            Cuenta cuent = _cuentaService.Buscar("123", "123");
+            //Cuenta cuent = _cuentaService.Buscar("123", "123");
 
-            return cuent;
+            return new Cuenta();
         }
     }
 }

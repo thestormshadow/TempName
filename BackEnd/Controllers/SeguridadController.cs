@@ -23,13 +23,13 @@ namespace BackEnd.Controllers
     {
         private readonly ICuentaService _cuentaService;
         private readonly IUsuarioService _usuarioService;
-        private readonly IConfiguration _configuration;
+        private readonly IAuthService _authService;        
 
-        public SeguridadController(ICuentaService cuentaService, IUsuarioService usuarioService, IConfiguration configuration)
+        public SeguridadController(ICuentaService cuentaService, IUsuarioService usuarioService, IAuthService authService)
         {
             _cuentaService = cuentaService;
             _usuarioService = usuarioService;
-            _configuration = configuration;
+            _authService = authService;
             
         }
 
@@ -41,13 +41,11 @@ namespace BackEnd.Controllers
         }
 
         [HttpPost("accestoken")]
-        public ActionResult LoginWithToken([FromBody] OnlyToken token)
-        {
-            
-            if (ValidateToken(token.Token))
-            {
-                var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token.Token);
-                Usuario usuario = _usuarioService.Buscar_PorIdCuenta(jwt.Claims.Where(x => x.Type == "IDCuenta").ToList().FirstOrDefault().Value);
+        public async Task<ActionResult> LoginWithToken([FromBody] OnlyToken token)
+        {            
+            if (_authService.IsValidToken(token.Token))
+            {                
+                Usuario usuario = await _usuarioService.Buscar_PorIdCuenta(_authService.GetTokenClaims(token.Token)?.FindFirst("IDCuenta")?.Value);
                 return Ok(new { access_token = token.Token, user = usuario });
             }
 
@@ -56,38 +54,38 @@ namespace BackEnd.Controllers
         
         // POST: api/Seguridad/login
         [HttpPost("login")]
-        public ActionResult Post([FromBody] Login obj)
+        public async Task<ActionResult> Post([FromBody] Login obj)
         {
-            Cuenta result = _cuentaService.Buscar(obj.Correo, obj.Password);
+            Cuenta result = await _cuentaService.Buscar(obj.Correo, obj.Password);
             
             if (result == null)
                 return NotFound(obj);
             else
             {
-                Usuario usuario = _usuarioService.Buscar_PorIdCuenta(result.ID);
-                return Ok(new { access_token = BuildToken(result), user = usuario });
+                Usuario usuario = await _usuarioService.Buscar_PorIdCuenta(result.ID);
+                return Ok(new { access_token = _authService.GenerateToken(result), user = usuario });
             }            
         }
                 
         // POST: api/Seguridad/register/{key}
         [HttpPost("register")]
-        public ActionResult Post([FromBody] Register obj)
+        public async Task<ActionResult> Post([FromBody] Register obj)
         {
             try
             {
                 Cuenta _cuenta = obj.Cuenta;
                 Usuario _usuario = obj.Usuario;
 
-                if (!_cuentaService.existeUsuario(_cuenta.Correo))
+                if (!await _cuentaService.existeUsuario(_cuenta.Correo))
                 {
-                    _cuenta = _cuentaService.Registrar(_cuenta);
+                    _cuenta = await _cuentaService.Registrar(_cuenta);
                     if (_cuenta != null)
                     {
                         _usuario.ID_Cuenta = _cuenta.ID;
-                        _usuario = _usuarioService.Registrar(_usuario);
+                        _usuario = await _usuarioService.Registrar(_usuario);
                         _cuenta.InfoUsuario = _usuario;
                         DB.Save(_cuenta);
-                        return Ok(new { access_token = BuildToken(_cuenta), user = _usuario });
+                        return Ok(new { access_token = _authService.GenerateToken(_cuenta), user = _usuario });
                     }
                 }
                 else
@@ -114,62 +112,7 @@ namespace BackEnd.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-        }
-
-        private string BuildToken(Cuenta cuenta)
-        {
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.UniqueName, cuenta.Correo),
-                new Claim("IDCuenta",cuenta.ID),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecretKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var expiration = DateTime.UtcNow.AddHours(1);
-
-            JwtSecurityToken token = new JwtSecurityToken(
-                issuer: "https://my-issuer.com/trust/issuer",
-                audience: "https://my-rp.com",
-                claims: claims,
-                expires: expiration,
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public bool ValidateToken(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecretKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = creds.Key,
-                ValidateAudience = false,
-                ValidIssuer = "https://my-issuer.com/trust/issuer",
-                RequireExpirationTime = true
-            };
-
-            SecurityToken validatedToken;
-            try
-            {
-                tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
-            }
-            catch (Exception e)
-            {
-                string err = e.Message;
-                return false;
-            }
-
-            return validatedToken != null;
-        }
+        }    
 
     }
 }

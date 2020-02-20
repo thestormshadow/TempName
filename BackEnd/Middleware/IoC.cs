@@ -15,6 +15,7 @@ namespace BackEnd.Middleware
         {
             services.AddSingleton<ICuentaService, CuentaService>();
             services.AddSingleton<IUsuarioService, UsuarioService>();
+            services.AddSingleton<IAuthService, AuthService>();
             return services;
         }
     }

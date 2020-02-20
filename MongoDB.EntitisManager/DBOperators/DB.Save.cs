@@ -39,7 +39,7 @@ namespace MongoDB.EntitiesManager
         /// <typeparam name="T">Any class that implements IEntity</typeparam>
         /// <param name="entity">The instance to persist</param>
         /// <param name="session">An optional session if using within a transaction</param>
-        public static async Task SaveAsync<T>(T entity, IClientSessionHandle session = null, string db = null) where T : IEntity
+        public static async Task<T> SaveAsync<T>(T entity, IClientSessionHandle session = null, string db = null) where T : IEntity
         {
             if (string.IsNullOrEmpty(entity.ID)) entity.ID = ObjectId.GenerateNewId().ToString();
             entity.ModifiedOn = DateTime.UtcNow;
@@ -48,6 +48,7 @@ namespace MongoDB.EntitiesManager
             await (session == null
                    ? Collection<T>(db).ReplaceOneAsync(x => x.ID.Equals(entity.ID), entity, new ReplaceOptions { IsUpsert = true })
                    : Collection<T>(db).ReplaceOneAsync(session, x => x.ID.Equals(entity.ID), entity, new ReplaceOptions { IsUpsert = true }));
+            return entity;
         }
 
         /// <summary>
@@ -56,9 +57,9 @@ namespace MongoDB.EntitiesManager
         /// <typeparam name="T">Any class that implements IEntity</typeparam>
         /// <param name="entity">The instance to persist</param>
         /// <param name="session">An optional session if using within a transaction</param>
-        public async Task SaveAsync<T>(T entity, IClientSessionHandle session = null) where T : IEntity
+        public async Task<T> SaveAsync<T>(T entity, IClientSessionHandle session = null) where T : IEntity
         {
-            await SaveAsync(entity, session, DbName);
+            return await SaveAsync(entity, session, DbName);
         }
 
         /// <summary>

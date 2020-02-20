@@ -4,43 +4,34 @@ using MongoDB.Driver;
 using MongoDB.EntitiesManager;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BackEnd.Services
 {
     public class CuentaService : ICuentaService
     {
-        public bool existeUsuario(string Correo)
+        public async Task<bool> existeUsuario(string Correo)
         {
-            var cuentas = (from a in DB.Queryable<Cuenta>()
-                           where a.Correo == Correo
-                           select a).ToList();
-
-            return (cuentas.Count > 0) ? true : false;
+            return await DB.Find<Cuenta>().Exist(x=>x.Status && x.Correo == Correo);
         }
 
-        public Cuenta Buscar(string Usuario, string Contraseña)
+        public async Task<Cuenta> Buscar(string Usuario, string Contraseña)
         {
-
-            var cuenta = (from a in DB.Queryable<Cuenta>()
-                          where a.Correo == Usuario && a.Contraseña == Contraseña && a.Status == true
-                          select a).FirstOrDefault();
-
-            return cuenta;
+            return await DB.Find<Cuenta>().OneAsync(x => x.Status && x.Correo == Usuario && x.Contraseña == Contraseña);
         }
 
-        public Cuenta Buscar(string ID)
+        public async Task<Cuenta> Buscar(string ID)
         {
-            return (from a in DB.Queryable<Cuenta>() where a.Status == true select a).FirstOrDefault();
+            return await DB.Find<Cuenta>().OneAsync(x => x.Status && x.ID == ID);
         }
 
-        public Cuenta Registrar(Cuenta Cuenta)
+        public async Task<Cuenta> Registrar(Cuenta Cuenta)
         {
 
-            if (!existeUsuario(Cuenta.Correo))
+            if (!await existeUsuario(Cuenta.Correo))
             {
                 Cuenta.UltimaConexion = DateTime.Now;
-                DB.Save(Cuenta);
-                return Cuenta;
+                return await DB.SaveAsync(Cuenta);
             }
             return null;
         }

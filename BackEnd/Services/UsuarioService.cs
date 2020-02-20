@@ -10,37 +10,17 @@ namespace BackEnd.Services
 {
     public class UsuarioService : IUsuarioService
     {
-        //private readonly ICuentaService _cuentaService;
-        
-        public Usuario Buscar(string ID)
-        {
-            var usuario = (from a in DB.Queryable<Usuario>()
-                          where a.ID == ID && a.Status == true
-                          select a).FirstOrDefault();
 
-            return usuario;
-        }
+        public async Task<Usuario> Buscar(string ID) => await DB.Find<Usuario>().OneAsync(x => x.Status && x.ID == ID);
 
-        public Usuario Buscar_PorIdCuenta(string IDCuenta)
-        {
-            Usuario response = null;
+        public async Task<Usuario> Buscar_PorIdCuenta(string IDCuenta) => await DB.Find<Usuario>().OneAsync(x => x.Status && x.ID_Cuenta == IDCuenta);
 
-            if (IDCuenta != null || IDCuenta != String.Empty)
-                response = (from a in DB.Queryable<Usuario>() where a.ID_Cuenta == IDCuenta select a).FirstOrDefault();
+        public async Task<List<Usuario>> Listar() => await DB.Find<Usuario>().ManyAsync(x => x.Status);
 
-            return response;
-        }
+        public async Task<List<Usuario>> Listar_PorNombre(string Nombre) => await DB.Find<Usuario>().ManyAsync(x => x.Status && x.Nombres == Nombre);
 
-        public List<Usuario> Listar() => (from a in DB.Queryable<Usuario>() select a).ToList();
+        public async Task<List<Usuario>> Listar_PorNombreCompleto(string NombreCompleto) => await DB.Find<Usuario>().ManyAsync(x => x.Status && (x.Nombres + " " + x.ApellidoP + " " + x.ApellidoM).Contains(NombreCompleto));
 
-        public List<Usuario> Listar_PorNombre(string Nombre) => (from a in DB.Queryable<Usuario>() where a.Nombres == Nombre select a).ToList();
-
-        public List<Usuario> Listar_PorNombreCompleto(string NombreCompleto) => (from a in DB.Queryable<Usuario>() where (a.Nombres + a.ApellidoP + a.ApellidoM).Contains(NombreCompleto) select a).ToList();
-
-        public Usuario Registrar(Usuario usuario)
-        {
-            DB.Save(usuario);
-            return usuario;
-        }
+        public async Task<Usuario> Registrar(Usuario usuario) => await DB.SaveAsync(usuario);
     }
 }

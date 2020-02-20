@@ -64,6 +64,28 @@ namespace MongoDB.EntitiesManager
         }
 
         /// <summary>
+        /// Find a single IEntity by ID
+        /// </summary>
+        /// <param name="ID">The unique ID of an IEntity</param>
+        /// <returns>A single entity or null if not found</returns>
+        public async Task<TProjection> OneAsync(Expression<Func<T, bool>> expression)
+        {
+            Match(expression);
+            return (await ExecuteAsync()).SingleOrDefault();
+        }
+
+        /// <summary>
+        /// Find a single IEntity by ID
+        /// </summary>
+        /// <param name="ID">The unique ID of an IEntity</param>
+        /// <returns>A single entity or null if not found</returns>
+        public async Task<bool> Exist(Expression<Func<T, bool>> expression)
+        {
+            Match(expression);
+            return ((await ExecuteAsync()).SingleOrDefault() == null)? false : true;
+        }
+
+        /// <summary>
         /// Find entities by supplying a lambda expression
         /// </summary>
         /// <param name="expression">x => x.Property == Value</param>
