@@ -10,20 +10,11 @@ namespace BackEnd.Services
 {
     public class CuentaService : ICuentaService
     {
-        public async Task<bool> existeUsuario(string Correo)
-        {
-            return await DB.Find<Cuenta>().Exist(x=>x.Status && x.Correo == Correo);
-        }
+        public async Task<bool> existeUsuario(string Correo) => await DB.Find<Cuenta>().Exist(x => x.Status && x.Correo == Correo);
 
-        public async Task<Cuenta> Buscar(string Usuario, string Contraseña)
-        {
-            return await DB.Find<Cuenta>().OneAsync(x => x.Status && x.Correo == Usuario && x.Contraseña == Contraseña);
-        }
+        public async Task<Cuenta> Buscar(string Usuario, string Contraseña) => await DB.Find<Cuenta>().OneAsync(x => x.Status && x.Correo == Usuario && x.Contraseña == Contraseña);
 
-        public async Task<Cuenta> Buscar(string ID)
-        {
-            return await DB.Find<Cuenta>().OneAsync(x => x.Status && x.ID == ID);
-        }
+        public async Task<Cuenta> Buscar(string ID) => await DB.Find<Cuenta>().OneAsync(x => x.Status && x.ID == ID);
 
         public async Task<Cuenta> Registrar(Cuenta Cuenta)
         {
