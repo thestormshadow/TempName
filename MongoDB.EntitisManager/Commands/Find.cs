@@ -5,8 +5,10 @@ using MongoDB.EntitiesManager.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MongoDB.EntitiesManager
@@ -82,7 +84,7 @@ namespace MongoDB.EntitiesManager
         public async Task<bool> Exist(Expression<Func<T, bool>> expression)
         {
             Match(expression);
-            return ((await ExecuteAsync()).SingleOrDefault() == null)? false : true;
+            return ((await ExecuteAsync()).SingleOrDefault() == null) ? false : true;
         }
 
         /// <summary>
@@ -334,7 +336,66 @@ namespace MongoDB.EntitiesManager
         public Task<List<TProjection>> ExecuteAsync()
         {
             if (sorts.Count > 0) options.Sort = Builders<T>.Sort.Combine(sorts);
-            return DB.FindAsync(filter, options, session, db);
+            return FillDetails(DB.FindAsync(filter, options, session, db));
+        }
+
+        public Task<List<TProjection>> FillDetails(Task<List<TProjection>> liPredictions)
+        {
+            Type tipo = typeof(TProjection);
+            foreach (TProjection Projection in liPredictions.Result)
+            {
+                PropertyInfo[] properties = Projection.GetType().GetProperties();
+
+                List<PropertyInfo> IdProperty = (from PropertyInfo property in properties
+                                                 where property.GetCustomAttributes(typeof(ForeignField), true).Length > 0
+                                                 select property).ToList();
+
+                foreach (PropertyInfo item in IdProperty)
+                {
+                    //var genList = CreateList(item.PropertyType);
+                    Type genericListType = typeof(List<>).MakeGenericType(item.PropertyType);
+                    List<dynamic> genList = DB.GetClient().GetDatabase("DBCentral").GetCollection<dynamic>(item.PropertyType.Name + "s").AsQueryable().ToList();
+
+                    for (int i = 0; i < genList.Count; i++)
+                    {
+                        object o = ChangeType(genList[i], item.PropertyType);
+                        
+                    }
+
+                    item.SetValue(Projection, Activator.CreateInstance(item.PropertyType));
+                }
+            }
+            return liPredictions;
+        }
+
+        public object ChangeType(object value, Type type)
+        {
+            if (value == null && type.IsGenericType) return Activator.CreateInstance(type);
+            if (value == null) return null;
+            if (type == value.GetType()) return value;
+            if (type.IsEnum)
+            {
+                if (value is string)
+                    return Enum.Parse(type, value as string);
+                else
+                    return Enum.ToObject(type, value);
+            }
+            if (!type.IsInterface && type.IsGenericType)
+            {
+                Type innerType = type.GetGenericArguments()[0];
+                object innerValue = ChangeType(value, innerType);
+                return Activator.CreateInstance(type, new object[] { innerValue });
+            }
+            if (value is string && type == typeof(Guid)) return new Guid(value as string);
+            if (value is string && type == typeof(Version)) return new Version(value as string);
+            if (!(value is IConvertible)) return value;
+            return Convert.ChangeType(value, type);
+        }
+
+        public System.Collections.IList CreateList(Type myType)
+        {
+            Type genericListType = typeof(List<>).MakeGenericType(myType);
+            return (System.Collections.IList)Activator.CreateInstance(genericListType);
         }
 
         private void AddTxtScoreToProjection(string propName)

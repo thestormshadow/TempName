@@ -40,4 +40,20 @@ namespace MongoDB.EntitiesManager
             Name = name;
         }
     }
+
+    /// <summary>
+    /// Use this attribute to specify the database to store this IEntity in.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class ForeignField : Attribute
+    {
+        public string Name { get; }
+
+        /// <param name="name">The name you want to use for the collection</param>
+        public ForeignField(string name)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
+            Name = name;
+        }
+    }
 }

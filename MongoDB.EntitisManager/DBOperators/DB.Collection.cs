@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Reflection;
 
@@ -15,7 +16,7 @@ namespace MongoDB.EntitiesManager
         {
             return GetDB(db).GetCollection<T>(GetCollectionName<T>());
         }
-
+               
         /// <summary>
         /// Gets the IMongoCollection for a given IEntity type.
         /// <para>TIP: Try never to use this unless really neccessary.</para>
@@ -40,6 +41,8 @@ namespace MongoDB.EntitiesManager
 
             return collection;
         }
+
+
 
         //internal static IMongoCollection<JoinRecord> GetRefCollection(string name, string db = null)
         //{
