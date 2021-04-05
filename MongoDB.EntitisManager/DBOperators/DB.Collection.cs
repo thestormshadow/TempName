@@ -42,7 +42,7 @@ namespace MongoDB.EntitiesManager
             return collection;
         }
 
-
+        public static IMongoCollection<T> CollectionName<T>(string CollectionName, string db = null) => GetDB(db).GetCollection<T>(CollectionName);
 
         //internal static IMongoCollection<JoinRecord> GetRefCollection(string name, string db = null)
         //{
