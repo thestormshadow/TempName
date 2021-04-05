@@ -341,7 +341,6 @@ namespace MongoDB.EntitiesManager
 
         public Task<List<TProjection>> FillDetails(Task<List<TProjection>> liPredictions)
         {
-            Type tipo = typeof(TProjection);
             foreach (TProjection Projection in liPredictions.Result)
             {
                 PropertyInfo[] properties = Projection.GetType().GetProperties();
@@ -352,44 +351,42 @@ namespace MongoDB.EntitiesManager
 
                 foreach (PropertyInfo item in IdProperty)
                 {
-                    //var genList = CreateList(item.PropertyType);
+                    string FF = item.GetCustomAttribute<ForeignField>().Name;
+
                     Type genericListType = typeof(List<>).MakeGenericType(item.PropertyType);
-                    List<dynamic> genList = DB.GetClient().GetDatabase("DBCentral").GetCollection<dynamic>(item.PropertyType.Name + "s").AsQueryable().ToList();
 
-                    for (int i = 0; i < genList.Count; i++)
+                    PropertyInfo ID = properties.Where(x => x.Name == "ID").FirstOrDefault();
+
+                    string IDs = ID.GetValue(Projection).ToString();
+                    
+                    List<dynamic> genList = DB.CollectionName<dynamic>(item.PropertyType.Name + "s")
+                        .Find("{"+ FF + ": '" + IDs + "', Status : true }").ToList();
+
+                    if (genList.Count > 0)
                     {
-                        object o = ChangeType(genList[i], item.PropertyType);
-                        
-                    }
+                        var values = (IDictionary<string, object>)genList[0];
+                        Object obj = Activator.CreateInstance(item.PropertyType);
+                        Type t = obj.GetType();
+                        List<PropertyInfo> props = t.GetProperties().ToList();
 
-                    item.SetValue(Projection, Activator.CreateInstance(item.PropertyType));
+                        foreach (PropertyInfo pI in props)
+                        {
+                            if (pI.PropertyType.Namespace != "BackEnd.Models")
+                            {
+                                if (pI.Name == "ID")
+                                    pI.SetValue(obj, values.Where(x => x.Key == "_id").Select(x => x.Value).SingleOrDefault().ToString());
+                                else
+                                    pI.SetValue(obj, values.Where(x => x.Key == pI.Name).Select(x => x.Value).SingleOrDefault());
+                            }
+                            else
+                                pI.SetValue(obj, null);
+                        }
+
+                        item.SetValue(Projection, obj);
+                    }                    
                 }
             }
             return liPredictions;
-        }
-
-        public object ChangeType(object value, Type type)
-        {
-            if (value == null && type.IsGenericType) return Activator.CreateInstance(type);
-            if (value == null) return null;
-            if (type == value.GetType()) return value;
-            if (type.IsEnum)
-            {
-                if (value is string)
-                    return Enum.Parse(type, value as string);
-                else
-                    return Enum.ToObject(type, value);
-            }
-            if (!type.IsInterface && type.IsGenericType)
-            {
-                Type innerType = type.GetGenericArguments()[0];
-                object innerValue = ChangeType(value, innerType);
-                return Activator.CreateInstance(type, new object[] { innerValue });
-            }
-            if (value is string && type == typeof(Guid)) return new Guid(value as string);
-            if (value is string && type == typeof(Version)) return new Version(value as string);
-            if (!(value is IConvertible)) return value;
-            return Convert.ChangeType(value, type);
         }
 
         public System.Collections.IList CreateList(Type myType)
