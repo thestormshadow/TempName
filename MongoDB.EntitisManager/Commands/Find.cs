@@ -339,7 +339,7 @@ namespace MongoDB.EntitiesManager
             return FillDetails(DB.FindAsync(filter, options, session, db));
         }
 
-                public Task<List<TProjection>> FillDetails(Task<List<TProjection>> liPredictions)
+        public Task<List<TProjection>> FillDetails(Task<List<TProjection>> liPredictions)
         {
             foreach (TProjection Projection in liPredictions.Result)
             {
@@ -395,22 +395,8 @@ namespace MongoDB.EntitiesManager
             {                
                 var values = (IDictionary<string, object>)objD;
                 Object obj = Activator.CreateInstance(ListType);
-                Type t = obj.GetType();
-                List<PropertyInfo> props = t.GetProperties().ToList();
-
-                foreach (PropertyInfo pI in props)
-                {
-                    if (pI.PropertyType.Namespace != "BackEnd.Models")
-                    {
-                        if (pI.Name == "ID")
-                            pI.SetValue(obj, values.Where(x => x.Key == "_id").Select(x => x.Value).SingleOrDefault().ToString());
-                        else
-                            pI.SetValue(obj, values.Where(x => x.Key == pI.Name).Select(x => x.Value).SingleOrDefault());
-                    }
-                    else
-                        pI.SetValue(obj, null);
-                }
-                lista.Add(obj);
+                
+                lista.Add(FillDynaimcProperty(obj,values));
             }
             property.SetValue(Projection, lista);
         }
@@ -418,9 +404,12 @@ namespace MongoDB.EntitiesManager
         {
             var values = (IDictionary<string, object>)genList[0];
             Object obj = Activator.CreateInstance(property.PropertyType);
+            property.SetValue(Projection, FillDynaimcProperty(obj, values));
+        }
+        public Object FillDynaimcProperty(Object obj, IDictionary<string, object> values)
+        {
             Type t = obj.GetType();
             List<PropertyInfo> props = t.GetProperties().ToList();
-
             foreach (PropertyInfo pI in props)
             {
                 if (pI.PropertyType.Namespace != "BackEnd.Models")
@@ -433,7 +422,7 @@ namespace MongoDB.EntitiesManager
                 else
                     pI.SetValue(obj, null);
             }
-            property.SetValue(Projection, obj);
+            return obj;
         }
         
         public System.Collections.IList CreateList(Type myType)
