@@ -361,15 +361,14 @@ namespace MongoDB.EntitiesManager
             List<PropertyInfo> IdProperty = (from PropertyInfo property in properties
                                              where property.GetCustomAttributes(typeof(ForeignField), true).Length > 0
                                              select property).ToList();
-            PropertyInfo ID = properties.Where(x => x.Name == "ID").FirstOrDefault();
-            string IDs = ID.GetValue(Projection).ToString();
+            
 
             foreach (PropertyInfo property in IdProperty)
             {
                 if (!property.GetCustomAttribute<ForeignField>().IsFillAutomaticDetails)
                     continue;
 
-                FillDetails(Projection, property, IDs);
+                FillDetails(Projection, property);
             }
         }
 
@@ -377,12 +376,15 @@ namespace MongoDB.EntitiesManager
         /// Fill Detail TProjection IN Property
         /// </summary>
         /// <returns>Fill Details</returns>
-        public void FillDetails(TProjection Projection, PropertyInfo property, string IDs)
+        public void FillDetails(TProjection Projection, PropertyInfo property)
         {
             string CollectionName = property.GetCustomAttribute<ForeignField>().CollectionName;
             string FF = property.GetCustomAttribute<ForeignField>().Name;
             string CustomFilter = property.GetCustomAttribute<ForeignField>().CustomFilter;
             bool CheckStatus = property.GetCustomAttribute<ForeignField>().CheckStatus;
+
+            PropertyInfo ID = Projection.GetType().GetProperties().Where(x => x.Name == "ID").FirstOrDefault();
+            string IDs = ID.GetValue(Projection).ToString();
 
             Type type = property.PropertyType;
 
