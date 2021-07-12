@@ -50,14 +50,18 @@ namespace MongoDB.EntitiesManager
         public string Name { get; }
         public string CollectionName { get; }
         public bool IsFillAutomaticDetails { get; }
+        public string CustomFilter { get; }
+        public bool CheckStatus { get; }
 
         /// <param name="name">The name you want to use for the collection</param>
-        public ForeignField(string name, string collectionName = "", bool isFillAutomaticDetails = false)
+        public ForeignField(string name, string collectionName = "", bool isFillAutomaticDetails = false, string customFilter = "", bool checkStatus = true)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("Name empty");
             Name = name;
             CollectionName = collectionName;
             IsFillAutomaticDetails = isFillAutomaticDetails;
+            CustomFilter = customFilter;
+            CheckStatus = checkStatus;
         }
     }
 }
