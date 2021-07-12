@@ -360,11 +360,11 @@ namespace MongoDB.EntitiesManager
                     PropertyInfo ID = properties.Where(x => x.Name == "ID").FirstOrDefault();
                     string IDs = ID.GetValue(Projection).ToString();
                     List<dynamic> genList = new List<dynamic>();
-                    string TableName = (property.GetCustomAttribute<ForeignField>().TableName == "") ? property.PropertyType.Name + "s" : property.GetCustomAttribute<ForeignField>().TableName;
+                    string TableName = (property.GetCustomAttribute<ForeignField>().CollectionName == "") ? property.PropertyType.Name + "s" : property.GetCustomAttribute<ForeignField>().CollectionName;
 
                     if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
                     {
-                        TableName = (property.GetCustomAttribute<ForeignField>().TableName == "") ? type.GetGenericArguments()[0].Name + "s" : property.GetCustomAttribute<ForeignField>().TableName;
+                        TableName = (property.GetCustomAttribute<ForeignField>().CollectionName == "") ? type.GetGenericArguments()[0].Name + "s" : property.GetCustomAttribute<ForeignField>().CollectionName;
                         genList = DB.CollectionName<dynamic>(TableName)
                             .Find("{" + FF + ": '" + IDs + "', Status : true }").ToList();
                     }
