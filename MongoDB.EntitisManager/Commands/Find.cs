@@ -379,6 +379,7 @@ namespace MongoDB.EntitiesManager
         /// <returns>Fill Details</returns>
         public void FillDetails(TProjection Projection, PropertyInfo property, string IDs)
         {
+            string CollectionName = property.GetCustomAttribute<ForeignField>().CollectionName;
             string FF = property.GetCustomAttribute<ForeignField>().Name;
             string CustomFilter = property.GetCustomAttribute<ForeignField>().CustomFilter;
             bool CheckStatus = property.GetCustomAttribute<ForeignField>().CheckStatus;
@@ -386,15 +387,20 @@ namespace MongoDB.EntitiesManager
             Type type = property.PropertyType;
 
             List<dynamic> genList = new List<dynamic>();
-            string TableName = (property.GetCustomAttribute<ForeignField>().CollectionName == "") ? property.PropertyType.Name + "s" : property.GetCustomAttribute<ForeignField>().CollectionName;
+            string TableName = (CollectionName == "") ? property.PropertyType.Name + "s" : CollectionName;
 
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-                genList = getListFinder((property.GetCustomAttribute<ForeignField>().CollectionName == "") ? type.GetGenericArguments()[0].Name + "s" : property.GetCustomAttribute<ForeignField>().CollectionName, FF, IDs, CustomFilter, CheckStatus);
-            else
-                genList = getListFinder(TableName, FF, IDs, CustomFilter, CheckStatus);
+            TableName = BuildCollectionName(type, TableName);
+            genList = getListFinder(TableName, FF, IDs, CustomFilter, CheckStatus);
 
             FillObject(type, genList, property, Projection);
         }
+
+        /// <summary>
+        /// Build CollectionName
+        /// </summary>
+        /// <returns>Fill Details</returns>
+        public string BuildCollectionName(Type type, string CollectionName) => (type.IsGenericType && type.GetGenericTypeDefinition() != typeof(List<>)) ? CollectionName : (CollectionName == "") ? type.GetGenericArguments()[0].Name + "s" : CollectionName;
+
 
         /// <summary>
         /// Get List Finder
