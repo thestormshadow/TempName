@@ -339,7 +339,7 @@ namespace MongoDB.EntitiesManager
             return FillDetails(DB.FindAsync(filter, options, session, db));
         }
 
-        public Task<List<TProjection>> FillDetails(Task<List<TProjection>> liPredictions)
+                public Task<List<TProjection>> FillDetails(Task<List<TProjection>> liPredictions)
         {
             foreach (TProjection Projection in liPredictions.Result)
             {
@@ -349,46 +349,93 @@ namespace MongoDB.EntitiesManager
                                                  where property.GetCustomAttributes(typeof(ForeignField), true).Length > 0
                                                  select property).ToList();
 
-                foreach (PropertyInfo item in IdProperty)
+                foreach (PropertyInfo property in IdProperty)
                 {
-                    string FF = item.GetCustomAttribute<ForeignField>().Name;
+                    if (!property.GetCustomAttribute<ForeignField>().IsFillAutomaticDetails)
+                        continue;
 
-                    Type genericListType = typeof(List<>).MakeGenericType(item.PropertyType);
-
+                    string FF = property.GetCustomAttribute<ForeignField>().Name;                    
+                                        
+                    Type type = property.PropertyType;
                     PropertyInfo ID = properties.Where(x => x.Name == "ID").FirstOrDefault();
-
                     string IDs = ID.GetValue(Projection).ToString();
-                    
-                    List<dynamic> genList = DB.CollectionName<dynamic>(item.PropertyType.Name + "s")
-                        .Find("{"+ FF + ": '" + IDs + "', Status : true }").ToList();
+                    List<dynamic> genList = new List<dynamic>();
+                    string TableName = (property.GetCustomAttribute<ForeignField>().TableName == "") ? property.PropertyType.Name + "s" : property.GetCustomAttribute<ForeignField>().TableName;
 
-                    if (genList.Count > 0)
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
                     {
-                        var values = (IDictionary<string, object>)genList[0];
-                        Object obj = Activator.CreateInstance(item.PropertyType);
-                        Type t = obj.GetType();
-                        List<PropertyInfo> props = t.GetProperties().ToList();
-
-                        foreach (PropertyInfo pI in props)
-                        {
-                            if (pI.PropertyType.Namespace != "BackEnd.Models")
-                            {
-                                if (pI.Name == "ID")
-                                    pI.SetValue(obj, values.Where(x => x.Key == "_id").Select(x => x.Value).SingleOrDefault().ToString());
-                                else
-                                    pI.SetValue(obj, values.Where(x => x.Key == pI.Name).Select(x => x.Value).SingleOrDefault());
-                            }
-                            else
-                                pI.SetValue(obj, null);
-                        }
-
-                        item.SetValue(Projection, obj);
-                    }                    
+                        TableName = (property.GetCustomAttribute<ForeignField>().TableName == "") ? type.GetGenericArguments()[0].Name + "s" : property.GetCustomAttribute<ForeignField>().TableName;
+                        genList = DB.CollectionName<dynamic>(TableName)
+                            .Find("{" + FF + ": '" + IDs + "', Status : true }").ToList();
+                    }
+                    else
+                        genList = DB.CollectionName<dynamic>(TableName)
+                                .Find("{" + FF + ": '" + IDs + "', Status : true }").ToList();
+                    
+                    FillObject(type, genList, property, Projection);
                 }
             }
             return liPredictions;
         }
 
+        public void FillObject(Type type, List<dynamic> genList, PropertyInfo property,  TProjection Projection)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))            
+                FillDynamicList(type, genList, property, Projection);            
+            else if (genList.Count == 1)
+                FillDynamicObject(genList, property, Projection);
+            else if (genList.Count > 0)
+                throw new Exception("[Error] Mas de un resultado encontrado en el foreignObject durante el FillDetails");
+        }        
+        public void FillDynamicList(Type type, List<dynamic> genList, PropertyInfo property, TProjection Projection)
+        {
+            Type ListType = type.GetGenericArguments()[0];
+            System.Collections.IList lista = CreateList(ListType);
+            foreach (dynamic objD in genList)
+            {                
+                var values = (IDictionary<string, object>)objD;
+                Object obj = Activator.CreateInstance(ListType);
+                Type t = obj.GetType();
+                List<PropertyInfo> props = t.GetProperties().ToList();
+
+                foreach (PropertyInfo pI in props)
+                {
+                    if (pI.PropertyType.Namespace != "BackEnd.Models")
+                    {
+                        if (pI.Name == "ID")
+                            pI.SetValue(obj, values.Where(x => x.Key == "_id").Select(x => x.Value).SingleOrDefault().ToString());
+                        else
+                            pI.SetValue(obj, values.Where(x => x.Key == pI.Name).Select(x => x.Value).SingleOrDefault());
+                    }
+                    else
+                        pI.SetValue(obj, null);
+                }
+                lista.Add(obj);
+            }
+            property.SetValue(Projection, lista);
+        }
+        public void FillDynamicObject(List<dynamic> genList, PropertyInfo property, TProjection Projection)
+        {
+            var values = (IDictionary<string, object>)genList[0];
+            Object obj = Activator.CreateInstance(property.PropertyType);
+            Type t = obj.GetType();
+            List<PropertyInfo> props = t.GetProperties().ToList();
+
+            foreach (PropertyInfo pI in props)
+            {
+                if (pI.PropertyType.Namespace != "BackEnd.Models")
+                {
+                    if (pI.Name == "ID")
+                        pI.SetValue(obj, values.Where(x => x.Key == "_id").Select(x => x.Value).SingleOrDefault().ToString());
+                    else
+                        pI.SetValue(obj, values.Where(x => x.Key == pI.Name).Select(x => x.Value).SingleOrDefault());
+                }
+                else
+                    pI.SetValue(obj, null);
+            }
+            property.SetValue(Projection, obj);
+        }
+        
         public System.Collections.IList CreateList(Type myType)
         {
             Type genericListType = typeof(List<>).MakeGenericType(myType);
