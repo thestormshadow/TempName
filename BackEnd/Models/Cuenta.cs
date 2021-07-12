@@ -13,7 +13,7 @@ namespace BackEnd.Models
 
         public string Correo { get => correo; set => correo = SecurityElement.Escape(value); }
         public string Contraseña { get => contraseña; set => contraseña = SecurityElement.Escape(value); }
-        [ForeignField("ID_Cuenta")]
+        [ForeignField("ID_Cuenta","Usuarios", true)]
         public Usuario InfoUsuario { get; set; }
         public DateTime UltimaConexion { get; set; }
         public int StatusAccount { get; set; }
